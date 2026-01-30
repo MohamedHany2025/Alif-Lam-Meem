@@ -132,12 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileUrl = document.getElementById('adminTrackingFileUrl').value;
             const fileDesc = document.getElementById('adminTrackingFileDesc').value;
             
-            // التحقق من رابط PDF
-            if (!fileUrl.includes('pdf') && !fileUrl.includes('.pdf')) {
-                alert('يجب أن يكون الرابط ملف PDF');
-                return;
-            }
-            
             try {
                 // جلب البيانات الحالية
                 const response = await fetch(JSONBIN_URL, {
