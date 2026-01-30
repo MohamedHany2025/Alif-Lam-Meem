@@ -118,6 +118,80 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // جلب الرسائل من JSONBin
     setTimeout(() => fetchMessages(), 500);
+    
+    // جلب ملفات المتابعة من JSONBin
+    fetchTrackingFiles();
+    
+    // معالج نموذج إضافة ملف متابعة جديد
+    const trackingUploadAdminForm = document.getElementById('trackingUploadAdminForm');
+    if (trackingUploadAdminForm) {
+        trackingUploadAdminForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileName = document.getElementById('adminTrackingFileName').value;
+            const fileUrl = document.getElementById('adminTrackingFileUrl').value;
+            const fileDesc = document.getElementById('adminTrackingFileDesc').value;
+            
+            // التحقق من رابط PDF
+            if (!fileUrl.includes('pdf') && !fileUrl.includes('.pdf')) {
+                alert('يجب أن يكون الرابط ملف PDF');
+                return;
+            }
+            
+            try {
+                // جلب البيانات الحالية
+                const response = await fetch(JSONBIN_URL, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                let trackingFiles = data.record && data.record.trackingFiles ? data.record.trackingFiles : [];
+                let applications = data.record && data.record.applications ? data.record.applications : [];
+                let messages = data.record && data.record.messages ? data.record.messages : [];
+                
+                // إضافة الملف الجديد
+                const newFile = {
+                    id: 'FILE-' + Date.now(),
+                    fileName: fileName,
+                    fileUrl: fileUrl,
+                    fileDesc: fileDesc,
+                    uploadDate: new Date().toISOString()
+                };
+                
+                trackingFiles.push(newFile);
+                
+                // حفظ البيانات
+                const updateResponse = await fetch(JSONBIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        applications: applications,
+                        messages: messages,
+                        trackingFiles: trackingFiles
+                    })
+                });
+                
+                if (updateResponse.ok) {
+                    alert('تم رفع الملف بنجاح!');
+                    trackingUploadAdminForm.reset();
+                    fetchTrackingFiles();
+                } else {
+                    alert('حدث خطأ في رفع الملف');
+                }
+                
+            } catch (error) {
+                console.error('خطأ:', error);
+                alert('حدث خطأ في رفع الملف');
+            }
+        });
+    }
 });
 
 // دالة جلب البيانات من JSONBin
@@ -976,4 +1050,116 @@ function exportMessagesToCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// ========== نظام إدارة ملفات المتابعة في Dashboard ==========
+
+// متغيرات ملفات المتابعة
+let allTrackingFiles = [];
+
+// دالة جلب ملفات المتابعة
+async function fetchTrackingFiles() {
+    try {
+        const response = await fetch(JSONBIN_URL, {
+            method: 'GET',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('خطأ في جلب البيانات');
+        
+        const data = await response.json();
+        allTrackingFiles = data.record && data.record.trackingFiles ? data.record.trackingFiles : [];
+        updateTrackingAdminTable();
+        
+    } catch (error) {
+        console.error('خطأ في جلب ملفات المتابعة:', error);
+    }
+}
+
+// دالة تحديث جدول الملفات
+function updateTrackingAdminTable() {
+    const tableBody = document.getElementById('trackingAdminFilesBody');
+    if (!tableBody) return;
+    
+    if (allTrackingFiles.length === 0) {
+        tableBody.innerHTML = `
+            <tr class="no-files-message">
+                <td colspan="4">
+                    <i class="fas fa-inbox"></i>
+                    <p>لا توجد ملفات حالياً</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let tableHTML = '';
+    allTrackingFiles.forEach((file) => {
+        const uploadDate = file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('ar-SA') : 'غير محدد';
+        
+        tableHTML += `
+            <tr>
+                <td>${file.fileName || 'بدون اسم'}</td>
+                <td>${file.fileDesc || 'بدون وصف'}</td>
+                <td>${uploadDate}</td>
+                <td>
+                    <button class="delete-file-btn" onclick="deleteTrackingFile('${file.id}')">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = tableHTML;
+}
+
+// دالة حذف ملف متابعة
+async function deleteTrackingFile(fileId) {
+    const confirmed = confirm('هل تريد حذف هذا الملف؟');
+    if (!confirmed) return;
+    
+    try {
+        const response = await fetch(JSONBIN_URL, {
+            method: 'GET',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        let trackingFiles = data.record && data.record.trackingFiles ? data.record.trackingFiles : [];
+        let applications = data.record && data.record.applications ? data.record.applications : [];
+        let messages = data.record && data.record.messages ? data.record.messages : [];
+        
+        trackingFiles = trackingFiles.filter(f => f.id !== fileId);
+        
+        const updateResponse = await fetch(JSONBIN_URL, {
+            method: 'PUT',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                applications: applications,
+                messages: messages,
+                trackingFiles: trackingFiles
+            })
+        });
+        
+        if (updateResponse.ok) {
+            alert('تم حذف الملف بنجاح');
+            fetchTrackingFiles();
+        } else {
+            alert('حدث خطأ في حذف الملف');
+        }
+        
+    } catch (error) {
+        console.error('خطأ:', error);
+        alert('حدث خطأ في حذف الملف');
+    }
 }

@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('تم تحميل script.js بنجاح');
 });
+
 // 9. نسخ رقم الطلب إلى الحافظة
 document.addEventListener('DOMContentLoaded', function() {
     const copyButton = document.getElementById('copyButton');
@@ -340,4 +341,81 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('تم نسخ رقم الطلب إلى الحافظة: ' + applicationId);
             }, function(err) {
                 console.error('فشل في نسخ رقم الطلب: ', err);
-});});}});
+            });
+        });
+    }
+});
+
+// ========== نظام إدارة ملفات متابعة الطلاب ==========
+
+document.addEventListener('DOMContentLoaded', function() {
+    // متغيرات JSONBin
+    const JSONBIN_BIN_ID = '697c129dae596e708f02274d';
+    const JSONBIN_API_KEY = '$2a$10$EVEgnKcuZEoujGa1B3HQmuU7C3Eh6NfJFdYR9IH0r1mQR3UAc2SU2';
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+    
+    let allTrackingFiles = [];
+    
+    // دالة جلب ملفات المتابعة
+    async function fetchTrackingFiles() {
+        try {
+            const response = await fetch(JSONBIN_URL, {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) throw new Error('خطأ في جلب البيانات');
+            
+            const data = await response.json();
+            allTrackingFiles = data.record && data.record.trackingFiles ? data.record.trackingFiles : [];
+            updateTrackingTable();
+            
+        } catch (error) {
+            console.error('خطأ في جلب ملفات المتابعة:', error);
+        }
+    }
+    
+    // دالة تحديث جدول الملفات
+    function updateTrackingTable() {
+        const tableBody = document.getElementById('trackingFilesBody');
+        if (!tableBody) return;
+        
+        if (allTrackingFiles.length === 0) {
+            tableBody.innerHTML = `
+                <tr class="no-files-message">
+                    <td colspan="4">
+                        <i class="fas fa-inbox"></i>
+                        <p>لا توجد ملفات متابعة حالياً</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let tableHTML = '';
+        allTrackingFiles.forEach((file) => {
+            const uploadDate = file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('ar-SA') : 'غير محدد';
+            
+            tableHTML += `
+                <tr>
+                    <td>${file.fileName || 'بدون اسم'}</td>
+                    <td>${file.fileDesc || 'بدون وصف'}</td>
+                    <td>${uploadDate}</td>
+                    <td>
+                        <a href="${file.fileUrl}" target="_blank" class="action-btn">
+                            <i class="fas fa-download"></i> تحميل
+                        </a>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = tableHTML;
+    }
+    
+    // جلب الملفات عند تحميل الصفحة
+    fetchTrackingFiles();
+});
