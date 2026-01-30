@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | أكاديمية Alif-Lam-Meem</title>
+    <link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+    <!-- شريط التنقل للوحة التحكم -->
+    <nav class="navbar dashboard-nav">
+        <div class="container">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="شعار الأكاديمية" class="logo">
+                <div class="logo-text">
+                    <h1>لوحة تحكم الأكاديمية</h1>
+                    <p>إدارة طلبات التحفيظ</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">الموقع الرئيسي</a></li>
+                <li><a href="#stats">الإحصائيات</a></li>
+                <li><a href="#applications">الطلبات</a></li>
+                <li><button id="refreshBtn"><i class="fas fa-sync-alt"></i> تحديث البيانات</button></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- قسم الإحصائيات -->
+    <section class="dashboard-stats" id="stats">
+        <div class="container">
+            <h2 class="section-title">نظرة عامة</h2>
+            
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalApplications">0</h3>
+                        <p>إجمالي الطلبات</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-quran"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="tajweedCount">0</h3>
+                        <p>طلبات تجويد وقرآن</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="quranOnlyCount">0</h3>
+                        <p>طلبات قرآن فقط</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="avgSessions">0</h3>
+                        <p>متوسط الحصص/أسبوع</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- فلاتر البحث -->
+            <div class="filters-section">
+                <h3>فلترة الطلبات</h3>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filterCourse">نوع الدورة:</label>
+                        <select id="filterCourse">
+                            <option value="all">جميع الدورات</option>
+                            <option value="تجويد وقرآن">تجويد وقرآن</option>
+                            <option value="قرآن فقط">قرآن فقط</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterSessions">عدد الحصص:</label>
+                        <select id="filterSessions">
+                            <option value="all">جميع الحصص</option>
+                            <option value="1">حصة واحدة</option>
+                            <option value="2">حصتان</option>
+                            <option value="3">ثلاث حصص</option>
+                            <option value="4">أربع حصص</option>
+                            <option value="5">خمس حصص أو أكثر</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="searchInput">بحث بالاسم أو البلد:</label>
+                        <input type="text" id="searchInput" placeholder="اكتب للبحث...">
+                    </div>
+                    
+                    <button id="applyFilters" class="btn filter-btn">تطبيق الفلاتر</button>
+                    <button id="resetFilters" class="btn reset-btn">إعادة تعيين</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم عرض الطلبات -->
+    <section class="applications-section" id="applications">
+        <div class="container">
+            <h2 class="section-title">الطلبات المقدمة</h2>
+            
+            <div class="table-controls">
+                <div class="entries-info">
+                    عرض <span id="currentEntries">0</span> من <span id="totalEntries">0</span> طلب
+                </div>
+                <div class="loading-indicator" id="loadingIndicator">
+                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="applications-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>الاسم الرباعي</th>
+                            <th>العمر</th>
+                            <th>البلد</th>
+                            <th>الحصص/أسبوع</th>
+                            <th>رقم الهاتف</th>
+                            <th>نوع الدورة</th>
+                            <th>تاريخ التقديم</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTableBody">
+                        <!-- سيتم تعبئة البيانات هنا عبر JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-footer">
+                <div class="pagination">
+                    <button id="prevPage" class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-right"></i> السابق
+                    </button>
+                    <span id="pageInfo">الصفحة 1 من 1</span>
+                    <button id="nextPage" class="pagination-btn" disabled>
+                        التالي <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                
+                <div class="export-section">
+                    <button id="exportCSV" class="btn export-btn">
+                        <i class="fas fa-file-csv"></i> تصدير كـ CSV
+                    </button>
+                    <button id="printTable" class="btn print-btn">
+                        <i class="fas fa-print"></i> طباعة الجدول
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- نافذة عرض تفاصيل الطلب -->
+    <div class="modal" id="applicationModal">
+        <div class="modal-content application-details">
+            <div class="modal-header">
+                <h3>تفاصيل الطلب</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <div class="detail-label">رقم الطلب:</div>
+                    <div class="detail-value" id="detailId"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">الاسم الرباعي:</div>
+                    <div class="detail-value" id="detailName"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">العمر:</div>
+                    <div class="detail-value" id="detailAge"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">البلد:</div>
+                    <div class="detail-value" id="detailCountry"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">الحصص الأسبوعية:</div>
+                    <div class="detail-value" id="detailSessions"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">رقم الهاتف:</div>
+                    <div class="detail-value" id="detailPhone"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">نوع الدورة:</div>
+                    <div class="detail-value" id="detailCourseType"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">تاريخ التقديم:</div>
+                    <div class="detail-value" id="detailDate"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">ملاحظات:</div>
+                    <div class="detail-value" id="detailNotes"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn conform-application-btn" id="conform-application-btn">تأكيد الطلب</button>
+                <button class="btn close-details-modal">إغلاق</button>
+                <button class="btn delete-application-btn" id="delete-application-btn">حذف الطلب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- رسالة عدم وجود بيانات -->
+    <div class="modal" id="noDataModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h3>لا توجد بيانات حالياً</h3>
+            <p>لم يتم تقديم أي طلبات حتى الآن.</p>
+            <p>سيظهر هنا أي طلب جديد يتم تقديمه عبر الموقع الرئيسي.</p>
+            <button class="btn close-nodata-modal">حسناً</button>
+        </div>
+    </div>
+
+    <!-- الفوتر -->
+    <footer class="footer dashboard-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-container">
+                        <img src="assets/logo.png" alt="شعار أكاديمية Alif-Lam-Meem" class="logo">
+                        <div class="logo-text">
+                            <h2>لوحة تحكم الأكاديمية</h2>
+                            <p>إدارة طلبات التحفيظ والتجويد</p>
+                        </div>
+                    </div>
+                    <p>آخر تحديث للبيانات: <span id="lastUpdated">--/--/---- --:--</span></p>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="index.html">الموقع الرئيسي</a></li>
+                        <li><a href="#stats">الإحصائيات</a></li>
+                        <li><a href="#applications">الطلبات</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-info">
+                    <h3>معلومات الاتصال</h3>
+                    <p><i class="fas fa-user-tie"></i> المديرة: أ. سارة بحيري</p>
+                    <p><i class="fas fa-envelope"></i> info@alif-lam-meem.com</p>
+                    <p><i class="fas fa-phone"></i> +20 10 6833 9196</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>جميع الحقوق محفوظة &copy; 2026 أكاديمية Alif-Lam-Meem | لوحة التحكم</p>
+                <p class="data-source">مصدر البيانات: <span id="dataSourceStatus">جارٍ الاتصال...</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
