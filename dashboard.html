@@ -25,6 +25,7 @@
                 <li><a href="index.html">الموقع الرئيسي</a></li>
                 <li><a href="#stats">الإحصائيات</a></li>
                 <li><a href="#applications">الطلبات</a></li>
+                <li><a href="#messages">الرسائل</a></li>
                 <li><button id="refreshBtn"><i class="fas fa-sync-alt"></i> تحديث البيانات</button></li>
                 <li class="user-info">
                     <i class="fas fa-user-circle"></i>
@@ -245,6 +246,107 @@
             <p>لم يتم تقديم أي طلبات حتى الآن.</p>
             <p>سيظهر هنا أي طلب جديد يتم تقديمه عبر الموقع الرئيسي.</p>
             <button class="btn close-nodata-modal">حسناً</button>
+        </div>
+    </div>
+
+    <!-- قسم الرسائل الإلكترونية -->
+    <section class="messages-section" id="messages">
+        <div class="container">
+            <h2 class="section-title">الرسائل الإلكترونية</h2>
+            
+            <div class="table-controls">
+                <div class="entries-info">
+                    عرض <span id="currentMessages">0</span> من <span id="totalMessages">0</span> رسالة
+                </div>
+                <div class="loading-indicator" id="messagesLoadingIndicator">
+                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل الرسائل...
+                </div>
+            </div>
+            
+            <div class="filters-section messages-filters">
+                <h3>فلترة الرسائل</h3>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="searchMessages">بحث بالاسم أو البريد الإلكتروني:</label>
+                        <input type="text" id="searchMessages" placeholder="اكتب للبحث...">
+                    </div>
+                    
+                    <button id="applyMessagesFilter" class="btn filter-btn">تطبيق البحث</button>
+                    <button id="resetMessagesFilter" class="btn reset-btn">إعادة تعيين</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="messages-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الرسالة</th>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الرسالة</th>
+                            <th>تاريخ الإرسال</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messagesTableBody">
+                        <!-- سيتم تعبئة البيانات هنا عبر JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-footer">
+                <div class="pagination">
+                    <button id="prevMessagesPage" class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-right"></i> السابق
+                    </button>
+                    <span id="messagesPageInfo">الصفحة 1 من 1</span>
+                    <button id="nextMessagesPage" class="pagination-btn" disabled>
+                        التالي <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                
+                <div class="export-section">
+                    <button id="exportMessagesCSV" class="btn export-btn">
+                        <i class="fas fa-file-csv"></i> تصدير الرسائل كـ CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- نافذة عرض تفاصيل الرسالة -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content message-details">
+            <div class="modal-header">
+                <h3>تفاصيل الرسالة</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <div class="detail-label">رقم الرسالة:</div>
+                    <div class="detail-value" id="messageDetailId"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">الاسم:</div>
+                    <div class="detail-value" id="messageDetailName"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">البريد الإلكتروني:</div>
+                    <div class="detail-value" id="messageDetailEmail"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">الرسالة:</div>
+                    <div class="detail-value message-content" id="messageDetailContent"></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">تاريخ الإرسال:</div>
+                    <div class="detail-value" id="messageDetailDate"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn delete-message-btn" id="delete-message-btn">حذف الرسالة</button>
+                <button class="btn close-details-modal">إغلاق</button>
+            </div>
         </div>
     </div>
 

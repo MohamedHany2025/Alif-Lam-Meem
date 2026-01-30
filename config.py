@@ -6,7 +6,7 @@ JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{JSONBIN_BIN_ID}"
 # ========== إعدادات نظام تسجيل الدخول ==========
 # بيانات الدخول إلى لوحة التحكم
 DASHBOARD_LOGIN_USERNAME = "admin"      # اسم المستخدم الافتراضي
-DASHBOARD_LOGIN_PASSWORD = "Admin@2026" # كلمة المرور الافتراضية
+DASHBOARD_LOGIN_PASSWORD = "ADMINadminROOT2026#@!()" # كلمة المرور الافتراضية
 # تحذير: غيّر كلمة المرور في بيئة الإنتاج (production)!
 
 # إعدادات التطبيق
