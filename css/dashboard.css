@@ -46,6 +46,49 @@
     margin-left: 5px;
 }
 
+/* معلومات المستخدم وتسجيل الخروج */
+.nav-menu .user-info {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    color: white;
+    font-size: 14px;
+}
+
+.nav-menu .user-info i {
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+.nav-menu .user-info span {
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.nav-menu .user-info #logoutBtn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.nav-menu .user-info #logoutBtn:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.nav-menu .user-info #logoutBtn i {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
 /* قسم الإحصائيات */
 .dashboard-stats {
     padding: 40px 0;
