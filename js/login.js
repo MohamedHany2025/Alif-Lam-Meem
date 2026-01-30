@@ -1,7 +1,7 @@
 // بيانات الدخول الصحيحة (يمكن تعديلها)
 const VALID_CREDENTIALS = {
     username: 'admin',
-    password: 'Admin@2026'
+    password: 'ADMINadminROOT2026#@!()'
 };
 
 // عند تحميل الصفحة
@@ -188,7 +188,7 @@ function validatePasswordRequirements(password) {
 
 // دالة معالجة "نسيت كلمة المرور"
 function showForgotPasswordMessage() {
-    alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.\n\nللأسف، هذه ميزة تجريبية.\n\nاسم المستخدم: admin\nكلمة المرور: Admin@2026');
+    alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.');
 }
 
 // دالة تسجيل محاولات الدخول الفاشلة
