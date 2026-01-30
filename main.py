@@ -130,7 +130,7 @@ class QuranDashboardApp(QMainWindow):
         self.splash.animate_progress()
         
         # عنوان لوحة التحكم
-        dashboard_url = "https://tressier-subcompressed-marion.ngrok-free.dev/dashboard.html"
+        dashboard_url = "https://mohamedhany2025.github.io/Alif-Lam-Meem/dashboard.html"
         self.web_view.load(QUrl(dashboard_url))
     
     def on_load_started(self):
