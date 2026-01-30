@@ -605,28 +605,30 @@ document.getElementById('delete-application-btn').addEventListener('click', func
                     applications: allApplications,
                     messages: messages 
                 })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`خطأ في تحديث البيانات: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('تم تحديث البيانات بنجاح:', data);
+            })
+            .catch(error => {
+                console.error('خطأ في تحديث البيانات:', error);
+                alert('حدث خطأ أثناء تحديث البيانات على السيرفر. يرجى المحاولة مرة أخرى.');
+            });
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`خطأ في تحديث البيانات: ${response.status}`);
-            }
-            return response.json();
-        }
-        )
-        .then(data => {
-            console.log('تم تحديث البيانات بنجاح:', data);
-        })
-        .catch(error => {
-            console.error('خطأ في تحديث البيانات:', error);
-            alert('حدث خطأ أثناء تحديث البيانات على السيرفر. يرجى المحاولة مرة أخرى.');
+        .then(() => {
+            // إعادة تطبيق الفلاتر وتحديث الجدول
+            applyFilters();
+            // إغلاق النافذة المنبثقة
+            document.getElementById('applicationModal').style.display = 'none';
+            alert(`تم حذف الطلب رقم ${appId} بنجاح.`);
         });
-        // إعادة تطبيق الفلاتر وتحديث الجدول
-        applyFilters();
-        // إغلاق النافذة المنبثقة
-        document.getElementById('applicationModal').style.display = 'none';
-        alert(`تم حذف الطلب رقم ${appId} بنجاح.`);
     }
-)};
+});
 
 // تأكيد الطلب
 document.getElementById('conform-application-btn').addEventListener('click', function() {
@@ -661,25 +663,28 @@ document.getElementById('conform-application-btn').addEventListener('click', fun
                 applications: allApplications,
                 messages: messages 
             })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`خطأ في تحديث البيانات: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('تم تحديث البيانات بنجاح:', data);
+        })
+        .catch(error => {
+            console.error('خطأ في تحديث البيانات:', error);
+            alert('حدث خطأ أثناء تحديث البيانات على السيرفر. يرجى المحاولة مرة أخرى.');
+        });
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`خطأ في تحديث البيانات: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('تم تحديث البيانات بنجاح:', data);
-    })
-    .catch(error => {
-        console.error('خطأ في تحديث البيانات:', error);
-        alert('حدث خطأ أثناء تحديث البيانات على السيرفر. يرجى المحاولة مرة أخرى.');
+    .then(() => {
+        // إعادة تطبيق الفلاتر وتحديث الجدول
+        applyFilters();
+        // إغلاق النافذة المنبثقة
+        document.getElementById('applicationModal').style.display = 'none';
+        alert(`تم تأكيد الطلب رقم ${appId} بنجاح.`);
     });
-    // إعادة تطبيق الفلاتر وتحديث الجدول
-    applyFilters();
-    // إغلاق النافذة المنبثقة
-    document.getElementById('applicationModal').style.display = 'none';
-    alert(`تم تأكيد الطلب رقم ${appId} بنجاح.`);
 });
 
 // إضافة الأنماط إلى الصفحة
@@ -687,7 +692,7 @@ const styleElement = document.createElement('style');
 styleElement.textContent = additionalStyles;
 document.head.appendChild(styleElement);
 
-// ========== ========== نظام إدارة الرسائل الإلكترونية ========== ==========
+// ========== نظام إدارة الرسائل الإلكترونية ==========
 
 let allMessages = [];
 let filteredMessages = [];
@@ -697,6 +702,8 @@ const messagesPerPage = 10;
 // دالة جلب الرسائل من JSONBin
 async function fetchMessages() {
     const loadingIndicator = document.getElementById('messagesLoadingIndicator');
+    if (!loadingIndicator) return;
+    
     loadingIndicator.style.display = 'block';
     
     try {
@@ -713,16 +720,11 @@ async function fetchMessages() {
         }
         
         const data = await response.json();
-        
-        // استخراج قائمة الرسائل
         allMessages = data.record && data.record.messages ? data.record.messages : [];
-        
-        // تطبيق الفلاتر الحالية
         applyMessagesFilter();
         
     } catch (error) {
         console.error('خطأ في جلب الرسائل:', error);
-        alert('عذراً، حدث خطأ في جلب الرسائل من السيرفر.');
     } finally {
         loadingIndicator.style.display = 'none';
     }
@@ -730,7 +732,10 @@ async function fetchMessages() {
 
 // دالة تطبيق فلاتر الرسائل
 function applyMessagesFilter() {
-    const searchQuery = document.getElementById('searchMessages').value.toLowerCase();
+    const searchInput = document.getElementById('searchMessages');
+    if (!searchInput) return;
+    
+    const searchQuery = searchInput.value.toLowerCase();
     
     filteredMessages = allMessages.filter(msg => {
         if (searchQuery && 
@@ -748,13 +753,17 @@ function applyMessagesFilter() {
 
 // دالة إعادة تعيين فلاتر الرسائل
 function resetMessagesFilter() {
-    document.getElementById('searchMessages').value = '';
-    applyMessagesFilter();
+    const searchInput = document.getElementById('searchMessages');
+    if (searchInput) {
+        searchInput.value = '';
+        applyMessagesFilter();
+    }
 }
 
 // دالة تحديث جدول الرسائل
 function updateMessagesTable() {
     const tableBody = document.getElementById('messagesTableBody');
+    if (!tableBody) return;
     
     if (filteredMessages.length === 0) {
         tableBody.innerHTML = `
@@ -766,26 +775,24 @@ function updateMessagesTable() {
                 </td>
             </tr>
         `;
-        
-        document.getElementById('currentMessages').textContent = '0';
-        document.getElementById('totalMessages').textContent = '0';
+        const currentMsg = document.getElementById('currentMessages');
+        const totalMsg = document.getElementById('totalMessages');
+        if (currentMsg) currentMsg.textContent = '0';
+        if (totalMsg) totalMsg.textContent = '0';
         return;
     }
     
-    // حساب مؤشرات الصفحة
     const startIndex = (currentMessagesPage - 1) * messagesPerPage;
     const endIndex = Math.min(startIndex + messagesPerPage, filteredMessages.length);
     const pageMessages = filteredMessages.slice(startIndex, endIndex);
     
-    // تحديث معلومات العدد
-    document.getElementById('currentMessages').textContent = endIndex;
-    document.getElementById('totalMessages').textContent = filteredMessages.length;
+    const currentMsg = document.getElementById('currentMessages');
+    const totalMsg = document.getElementById('totalMessages');
+    if (currentMsg) currentMsg.textContent = endIndex;
+    if (totalMsg) totalMsg.textContent = filteredMessages.length;
     
-    // بناء صفوف الجدول
     let tableHTML = '';
-    
-    pageMessages.forEach((msg, index) => {
-        // تنسيق التاريخ
+    pageMessages.forEach((msg) => {
         const msgDate = msg.date ? new Date(msg.date) : new Date();
         const formattedDate = msgDate.toLocaleDateString('ar-SA', {
             year: 'numeric',
@@ -795,7 +802,6 @@ function updateMessagesTable() {
             minute: '2-digit'
         });
         
-        // تقصير الرسالة
         const shortMessage = msg.contactMessage && msg.contactMessage.length > 40 
             ? msg.contactMessage.substring(0, 40) + '...' 
             : msg.contactMessage || 'لا توجد';
@@ -818,12 +824,10 @@ function updateMessagesTable() {
     
     tableBody.innerHTML = tableHTML;
     
-    // إضافة مستمعي الأحداث
     document.querySelectorAll('#messagesTableBody tr[data-msg-id]').forEach(row => {
         row.addEventListener('click', function() {
             const msgId = this.getAttribute('data-msg-id');
             const message = allMessages.find(msg => msg.id === msgId);
-            
             if (message) {
                 showMessageDetails(message);
             }
@@ -834,8 +838,8 @@ function updateMessagesTable() {
 // دالة عرض تفاصيل الرسالة
 function showMessageDetails(message) {
     const modal = document.getElementById('messageModal');
+    if (!modal) return;
     
-    // تعبئة البيانات
     document.getElementById('messageDetailId').textContent = message.id || 'غير متوفر';
     document.getElementById('messageDetailName').textContent = message.contactName || 'غير معروف';
     document.getElementById('messageDetailEmail').textContent = message.contactEmail || 'غير متوفر';
@@ -851,23 +855,22 @@ function showMessageDetails(message) {
     });
     document.getElementById('messageDetailDate').textContent = formattedDate;
     
-    // عرض النافذة
     modal.style.display = 'flex';
     
-    // إضافة مستمع لزر الحذف
     const deleteBtn = document.getElementById('delete-message-btn');
-    deleteBtn.onclick = function() {
-        deleteMessage(message.id);
-    };
+    if (deleteBtn) {
+        deleteBtn.onclick = function() {
+            deleteMessage(message.id);
+        };
+    }
 }
 
 // دالة حذف الرسالة
 async function deleteMessage(msgId) {
-    const confirmed = confirm('هل تريد حذف هذه الرسالة؟ هذا الإجراء لا يمكن التراجع عنه.');
+    const confirmed = confirm('هل تريد حذف هذه الرسالة؟');
     if (!confirmed) return;
     
     try {
-        // جلب البيانات الحالية
         const getResponse = await fetch(JSONBIN_URL, {
             method: 'GET',
             headers: {
@@ -877,14 +880,11 @@ async function deleteMessage(msgId) {
         });
         
         const jsonData = await getResponse.json();
-        
         let applications = jsonData.record && jsonData.record.applications ? jsonData.record.applications : [];
         let messages = jsonData.record && jsonData.record.messages ? jsonData.record.messages : [];
         
-        // حذف الرسالة
         messages = messages.filter(msg => msg.id !== msgId);
         
-        // تحديث البيانات
         const updateResponse = await fetch(JSONBIN_URL, {
             method: 'PUT',
             headers: {
@@ -897,31 +897,34 @@ async function deleteMessage(msgId) {
             })
         });
         
-        if (!updateResponse.ok) {
-            throw new Error('فشل في حذف الرسالة');
-        }
+        if (!updateResponse.ok) throw new Error('فشل في حذف الرسالة');
         
         alert('تم حذف الرسالة بنجاح');
-        document.getElementById('messageModal').style.display = 'none';
+        const modal = document.getElementById('messageModal');
+        if (modal) modal.style.display = 'none';
         fetchMessages();
         
     } catch (error) {
-        console.error('خطأ في حذف الرسالة:', error);
+        console.error('خطأ:', error);
         alert('حدث خطأ في حذف الرسالة.');
     }
 }
 
-// دالة تحديث معلومات التقسيم للرسائل
+// دالة تحديث معلومات التقسيم
 function updateMessagesPaginationInfo() {
     const totalPages = Math.max(1, Math.ceil(filteredMessages.length / messagesPerPage));
-    document.getElementById('messagesPageInfo').textContent = `الصفحة ${currentMessagesPage} من ${totalPages}`;
+    const pageInfo = document.getElementById('messagesPageInfo');
+    if (pageInfo) {
+        pageInfo.textContent = `الصفحة ${currentMessagesPage} من ${totalPages}`;
+    }
     
-    // تفعيل/تعطيل أزرار التنقل
-    document.getElementById('prevMessagesPage').disabled = currentMessagesPage === 1;
-    document.getElementById('nextMessagesPage').disabled = currentMessagesPage === totalPages;
+    const prevBtn = document.getElementById('prevMessagesPage');
+    const nextBtn = document.getElementById('nextMessagesPage');
+    if (prevBtn) prevBtn.disabled = currentMessagesPage === 1;
+    if (nextBtn) nextBtn.disabled = currentMessagesPage === totalPages;
 }
 
-// دالة الانتقال للصفحة السابقة للرسائل
+// دالة الانتقال للصفحة السابقة
 function goToPrevMessagesPage() {
     if (currentMessagesPage > 1) {
         currentMessagesPage--;
@@ -930,7 +933,7 @@ function goToPrevMessagesPage() {
     }
 }
 
-// دالة الانتقال للصفحة التالية للرسائل
+// دالة الانتقال للصفحة التالية
 function goToNextMessagesPage() {
     const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
     if (currentMessagesPage < totalPages) {
@@ -940,46 +943,37 @@ function goToNextMessagesPage() {
     }
 }
 
-// دالة تصدير الرسائل كـ CSV
+// دالة تصدير الرسائل
 function exportMessagesToCSV() {
     if (filteredMessages.length === 0) {
         alert('لا توجد رسائل للتصدير');
         return;
     }
     
-    // إنشاء رؤوس الأعمدة
     const headers = ['رقم الرسالة', 'الاسم', 'البريد الإلكتروني', 'الرسالة', 'تاريخ الإرسال'];
+    let csvContent = '\uFEFF' + headers.map(h => `"${h}"`).join(',') + '\n';
     
-    // إنشاء صفوف البيانات
-    const rows = filteredMessages.map(msg => {
+    filteredMessages.forEach(msg => {
         const msgDate = new Date(msg.date);
-        const formattedDate = msgDate.toLocaleDateString('ar-SA') + ' ' + 
-                            msgDate.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        const formattedDate = msgDate.toLocaleDateString('ar-SA') + ' ' + msgDate.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
         
-        return [
+        const row = [
             msg.id || '',
             msg.contactName || '',
             msg.contactEmail || '',
             `"${(msg.contactMessage || '').replace(/"/g, '""')}"`,
             formattedDate
         ];
+        csvContent += row.join(',') + '\n';
     });
     
-    // إنشاء محتوى CSV
-    let csvContent = '\uFEFF'; // BOM للدعم الكامل للعربية
-    csvContent += headers.map(h => `"${h}"`).join(',') + '\n';
-    csvContent += rows.map(row => row.join(',')).join('\n');
-    
-    // إنشاء وتحميل الملف
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    
     link.setAttribute('href', url);
     link.setAttribute('download', `رسائل_الأكاديمية_${new Date().toLocaleDateString('ar-SA')}.csv`);
     link.style.visibility = 'hidden';
-    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}})});
+}
