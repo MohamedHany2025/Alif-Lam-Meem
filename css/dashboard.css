@@ -644,3 +644,155 @@
     background-color: #218838;
     transform: translateY(-2px);
 }
+
+/* ========== أنماط قسم الرسائل الإلكترونية ========== */
+
+.messages-section {
+    padding: 40px 0;
+    background-color: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    margin: 40px 0;
+}
+
+.messages-filters {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.messages-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.messages-table thead {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 600;
+}
+
+.messages-table th {
+    padding: 15px 20px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.messages-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-size: 13px;
+}
+
+.messages-table tbody tr {
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.messages-table tbody tr:hover {
+    background-color: #f0f8ff;
+}
+
+.messages-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-view-message {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    transition: var(--transition);
+    font-size: 12px;
+}
+
+.btn-view-message:hover {
+    background-color: var(--dark-color);
+    transform: translateY(-2px);
+}
+
+/* نافذة تفاصيل الرسالة */
+.message-details {
+    max-width: 600px;
+    width: 90%;
+}
+
+.message-content {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    border-right: 4px solid var(--primary-color);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#delete-message-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+#delete-message-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* رسالة عدم وجود رسائل */
+.messages-table tbody .no-data-message td {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.messages-table tbody .no-data-message i {
+    font-size: 48px;
+    color: #ddd;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.messages-table tbody .no-data-message h3 {
+    color: #666;
+    margin: 10px 0 5px;
+}
+
+.messages-table tbody .no-data-message p {
+    color: #999;
+    font-size: 12px;
+}
+
+/* Responsive لقسم الرسائل */
+@media (max-width: 768px) {
+    .messages-table {
+        font-size: 0.8rem;
+    }
+    
+    .messages-table th,
+    .messages-table td {
+        padding: 10px 8px;
+    }
+    
+    .btn-view-message {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}
