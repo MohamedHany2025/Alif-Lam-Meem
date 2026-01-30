@@ -9,8 +9,60 @@ let filteredApplications = [];
 let currentPage = 1;
 const itemsPerPage = 10;
 
+// ========== نظام التحقق من جلسة المستخدم ==========
+
+// دالة التحقق من جلسة المستخدم
+function checkSession() {
+    const loggedIn = sessionStorage.getItem('dashboardLoggedIn');
+    const username = sessionStorage.getItem('loginUsername');
+    const loginTime = sessionStorage.getItem('loginTime');
+    
+    // إذا لم يكن المستخدم مسجلاً دخول، أعده إلى صفحة تسجيل الدخول
+    if (loggedIn !== 'true' || !username || !loginTime) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    // التحقق من انقضاء الجلسة (24 ساعة)
+    const currentTime = new Date().getTime();
+    const sessionTimeout = 24 * 60 * 60 * 1000; // 24 ساعة
+    
+    if (currentTime - parseInt(loginTime) > sessionTimeout) {
+        // انتهت الجلسة، أعد المستخدم إلى صفحة تسجيل الدخول
+        sessionStorage.clear();
+        alert('انتهت جلسة عملك. يرجى تسجيل الدخول مرة أخرى.');
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    // عرض اسم المستخدم
+    document.getElementById('currentUsername').textContent = username;
+    
+    return true;
+}
+
+// دالة تسجيل الخروج
+function logout() {
+    const confirmed = confirm('هل تريد بالفعل تسجيل الخروج؟');
+    if (confirmed) {
+        // مسح بيانات الجلسة
+        sessionStorage.clear();
+        
+        // الانتقال إلى صفحة تسجيل الدخول
+        window.location.href = 'login.html';
+    }
+}
+
 // عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
+    // التحقق من جلسة المستخدم أولاً
+    if (!checkSession()) {
+        return;
+    }
+    
+    // إضافة مستمع لزر تسجيل الخروج
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    
     // تفعيل شريط التنقل للأجهزة المحمولة
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
