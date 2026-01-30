@@ -68,6 +68,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 applications = [];
             }
             
+            // الحصول على الرسائل الموجودة (للحفاظ عليها)
+            let messages = [];
+            if (jsonData.record && Array.isArray(jsonData.record.messages)) {
+                messages = jsonData.record.messages;
+            }
+            
             // الخطوة 2: إنشاء كائن التقديم الجديد
             const newApplication = {
                 id: generateApplicationId(),
@@ -87,7 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-Bin-Versioning': 'false'
                 },
                 body: JSON.stringify({
-                    "applications": applications  // إرسال مصفوفة التقديمات المحدثة
+                    "applications": applications,  // إرسال مصفوفة التقديمات المحدثة
+                    "messages": messages  // الحفاظ على الرسائل الموجودة
                 })
             });
             
@@ -187,21 +194,118 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 7. نموذج الاتصال (وظيفة أساسية بدون حفظ)
+    // 7. نموذج الاتصال (إرسال الرسائل إلى JSONBin)
+    async function submitContactMessage(contactData) {
+        console.log('بدء عملية إرسال الرسالة إلى JSONBin...');
+        
+        try {
+            // الخطوة 1: جلب البيانات الحالية من JSONBin
+            const getResponse = await fetch(JSONBIN_URL, {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!getResponse.ok) {
+                throw new Error(`فشل في جلب البيانات: ${getResponse.status}`);
+            }
+            
+            const jsonData = await getResponse.json();
+            
+            // الحصول على مصفوفة الرسائل الحالية
+            let messages = [];
+            if (jsonData.record && Array.isArray(jsonData.record.messages)) {
+                messages = jsonData.record.messages;
+            }
+            
+            // الحصول على مصفوفة التقديمات للحفاظ عليها
+            let applications = [];
+            if (jsonData.record && Array.isArray(jsonData.record.applications)) {
+                applications = jsonData.record.applications;
+            }
+            
+            // الخطوة 2: إنشاء كائن الرسالة الجديدة
+            const newMessage = {
+                id: 'MSG-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+                date: new Date().toISOString(),
+                ...contactData
+            };
+            
+            messages.push(newMessage);
+            
+            // الخطوة 3: تحديث البيانات في JSONBin
+            const updateResponse = await fetch(JSONBIN_URL, {
+                method: 'PUT',
+                headers: {
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'Content-Type': 'application/json',
+                    'X-Bin-Versioning': 'false'
+                },
+                body: JSON.stringify({
+                    "applications": applications,
+                    "messages": messages
+                })
+            });
+            
+            if (!updateResponse.ok) {
+                const errorText = await updateResponse.text();
+                throw new Error(`فشل في حفظ الرسالة: ${updateResponse.status}`);
+            }
+            
+            console.log('تم حفظ الرسالة بنجاح');
+            return { success: true, messageId: newMessage.id };
+            
+        } catch (error) {
+            console.error('خطأ في submitContactMessage:', error);
+            return { 
+                success: false, 
+                error: error.message || 'حدث خطأ غير معروف'
+            };
+        }
+    }
+    
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const contactName = document.getElementById('contactName').value;
-            const contactEmail = document.getElementById('contactEmail').value;
-            const contactMessage = document.getElementById('contactMessage').value;
+            const contactName = document.getElementById('contactName').value.trim();
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            const contactMessage = document.getElementById('contactMessage').value.trim();
             
-            // هنا يمكنك إضافة كود لإرسال رسالة الاتصال
-            alert(`شكراً ${contactName || 'للمستخدم'}، تم استلام رسالتك. سنقوم بالرد عليك في أقرب وقت ممكن.`);
+            // التحقق من البيانات
+            if (!contactName || !contactEmail || !contactMessage) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
             
-            // إعادة تعيين النموذج
-            contactForm.reset();
+            // عرض حالة التحميل
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+            submitBtn.disabled = true;
+            
+            try {
+                const result = await submitContactMessage({
+                    contactName,
+                    contactEmail,
+                    contactMessage
+                });
+                
+                if (result.success) {
+                    alert(`شكراً ${contactName}، تم استلام رسالتك بنجاح. سنقوم بالرد عليك قريباً على البريد: ${contactEmail}`);
+                    contactForm.reset();
+                } else {
+                    alert(`عذراً، حدث خطأ في إرسال الرسالة:\n${result.error}`);
+                }
+            } catch (error) {
+                alert('حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         });
     }
     

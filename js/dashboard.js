@@ -77,8 +77,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // جلب البيانات من JSONBin
     fetchApplications();
     
+    // جلب الرسائل من JSONBin
+    setTimeout(() => fetchMessages(), 500);
+    
     // إضافة مستمعي الأحداث
-    document.getElementById('refreshBtn').addEventListener('click', fetchApplications);
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        fetchApplications();
+        fetchMessages();
+    });
     document.getElementById('applyFilters').addEventListener('click', applyFilters);
     document.getElementById('resetFilters').addEventListener('click', resetFilters);
     document.getElementById('searchInput').addEventListener('keyup', applyFilters);
@@ -564,14 +570,33 @@ document.getElementById('delete-application-btn').addEventListener('click', func
     if (confirm(`هل أنت متأكد من حذف الطلب رقم ${appId}؟ لا يمكن التراجع عن هذا الإجراء.`)) {
         // حذف الطلب من allApplications
         allApplications = allApplications.filter(app => app.id !== appId);
-        // تحديث البيانات في JSONBin    
+        
+        // جلب الرسائل الموجودة للحفاظ عليها
         fetch(JSONBIN_URL, {
-            method: 'PUT',
+            method: 'GET',
             headers: {
                 'X-Master-Key': JSONBIN_API_KEY,
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ applications: allApplications })
+            }
+        })
+        .then(response => response.json())
+        .then(jsonData => {
+            let messages = [];
+            if (jsonData.record && Array.isArray(jsonData.record.messages)) {
+                messages = jsonData.record.messages;
+            }
+            
+            // تحديث البيانات في JSONBin
+            return fetch(JSONBIN_URL, {
+                method: 'PUT',
+                headers: {
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    applications: allApplications,
+                    messages: messages 
+                })
         })
         .then(response => {
             if (!response.ok) {
@@ -602,14 +627,32 @@ document.getElementById('conform-application-btn').addEventListener('click', fun
     // حذف الطلب من allApplications
     allApplications = allApplications.filter(app => app.id !== appId);
     
-    // تحديث البيانات في JSONBin    
+    // جلب الرسائل الموجودة للحفاظ عليها
     fetch(JSONBIN_URL, {
-        method: 'PUT',
+        method: 'GET',
         headers: {
             'X-Master-Key': JSONBIN_API_KEY,
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ applications: allApplications })
+        }
+    })
+    .then(response => response.json())
+    .then(jsonData => {
+        let messages = [];
+        if (jsonData.record && Array.isArray(jsonData.record.messages)) {
+            messages = jsonData.record.messages;
+        }
+        
+        // تحديث البيانات في JSONBin
+        return fetch(JSONBIN_URL, {
+            method: 'PUT',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                applications: allApplications,
+                messages: messages 
+            })
     })
     .then(response => {
         if (!response.ok) {
@@ -635,3 +678,311 @@ document.getElementById('conform-application-btn').addEventListener('click', fun
 const styleElement = document.createElement('style');
 styleElement.textContent = additionalStyles;
 document.head.appendChild(styleElement);
+
+// ========== ========== نظام إدارة الرسائل الإلكترونية ========== ==========
+
+let allMessages = [];
+let filteredMessages = [];
+let currentMessagesPage = 1;
+const messagesPerPage = 10;
+
+// دالة جلب الرسائل من JSONBin
+async function fetchMessages() {
+    const loadingIndicator = document.getElementById('messagesLoadingIndicator');
+    loadingIndicator.style.display = 'block';
+    
+    try {
+        const response = await fetch(JSONBIN_URL, {
+            method: 'GET',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`خطأ في جلب الرسائل: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // استخراج قائمة الرسائل
+        allMessages = data.record && data.record.messages ? data.record.messages : [];
+        
+        // تطبيق الفلاتر الحالية
+        applyMessagesFilter();
+        
+    } catch (error) {
+        console.error('خطأ في جلب الرسائل:', error);
+        alert('عذراً، حدث خطأ في جلب الرسائل من السيرفر.');
+    } finally {
+        loadingIndicator.style.display = 'none';
+    }
+}
+
+// دالة تطبيق فلاتر الرسائل
+function applyMessagesFilter() {
+    const searchQuery = document.getElementById('searchMessages').value.toLowerCase();
+    
+    filteredMessages = allMessages.filter(msg => {
+        if (searchQuery && 
+            !msg.contactName.toLowerCase().includes(searchQuery) && 
+            !msg.contactEmail.toLowerCase().includes(searchQuery)) {
+            return false;
+        }
+        return true;
+    });
+    
+    currentMessagesPage = 1;
+    updateMessagesTable();
+    updateMessagesPaginationInfo();
+}
+
+// دالة إعادة تعيين فلاتر الرسائل
+function resetMessagesFilter() {
+    document.getElementById('searchMessages').value = '';
+    applyMessagesFilter();
+}
+
+// دالة تحديث جدول الرسائل
+function updateMessagesTable() {
+    const tableBody = document.getElementById('messagesTableBody');
+    
+    if (filteredMessages.length === 0) {
+        tableBody.innerHTML = `
+            <tr class="no-data-message">
+                <td colspan="6">
+                    <i class="fas fa-envelope-open"></i>
+                    <h3>لا توجد رسائل</h3>
+                    <p>لم تصل أي رسائل جديدة حتى الآن.</p>
+                </td>
+            </tr>
+        `;
+        
+        document.getElementById('currentMessages').textContent = '0';
+        document.getElementById('totalMessages').textContent = '0';
+        return;
+    }
+    
+    // حساب مؤشرات الصفحة
+    const startIndex = (currentMessagesPage - 1) * messagesPerPage;
+    const endIndex = Math.min(startIndex + messagesPerPage, filteredMessages.length);
+    const pageMessages = filteredMessages.slice(startIndex, endIndex);
+    
+    // تحديث معلومات العدد
+    document.getElementById('currentMessages').textContent = endIndex;
+    document.getElementById('totalMessages').textContent = filteredMessages.length;
+    
+    // بناء صفوف الجدول
+    let tableHTML = '';
+    
+    pageMessages.forEach((msg, index) => {
+        // تنسيق التاريخ
+        const msgDate = msg.date ? new Date(msg.date) : new Date();
+        const formattedDate = msgDate.toLocaleDateString('ar-SA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // تقصير الرسالة
+        const shortMessage = msg.contactMessage && msg.contactMessage.length > 40 
+            ? msg.contactMessage.substring(0, 40) + '...' 
+            : msg.contactMessage || 'لا توجد';
+        
+        tableHTML += `
+            <tr data-msg-id="${msg.id}">
+                <td>${msg.id || 'غير متوفر'}</td>
+                <td>${msg.contactName || 'غير معروف'}</td>
+                <td dir="ltr">${msg.contactEmail || 'غير متوفر'}</td>
+                <td>${shortMessage}</td>
+                <td>${formattedDate}</td>
+                <td>
+                    <button class="btn-view-message" title="عرض التفاصيل">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = tableHTML;
+    
+    // إضافة مستمعي الأحداث
+    document.querySelectorAll('#messagesTableBody tr[data-msg-id]').forEach(row => {
+        row.addEventListener('click', function() {
+            const msgId = this.getAttribute('data-msg-id');
+            const message = allMessages.find(msg => msg.id === msgId);
+            
+            if (message) {
+                showMessageDetails(message);
+            }
+        });
+    });
+}
+
+// دالة عرض تفاصيل الرسالة
+function showMessageDetails(message) {
+    const modal = document.getElementById('messageModal');
+    
+    // تعبئة البيانات
+    document.getElementById('messageDetailId').textContent = message.id || 'غير متوفر';
+    document.getElementById('messageDetailName').textContent = message.contactName || 'غير معروف';
+    document.getElementById('messageDetailEmail').textContent = message.contactEmail || 'غير متوفر';
+    document.getElementById('messageDetailContent').textContent = message.contactMessage || 'لا توجد رسالة';
+    
+    const msgDate = message.date ? new Date(message.date) : new Date();
+    const formattedDate = msgDate.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    document.getElementById('messageDetailDate').textContent = formattedDate;
+    
+    // عرض النافذة
+    modal.style.display = 'flex';
+    
+    // إضافة مستمع لزر الحذف
+    const deleteBtn = document.getElementById('delete-message-btn');
+    deleteBtn.onclick = function() {
+        deleteMessage(message.id);
+    };
+}
+
+// دالة حذف الرسالة
+async function deleteMessage(msgId) {
+    const confirmed = confirm('هل تريد حذف هذه الرسالة؟ هذا الإجراء لا يمكن التراجع عنه.');
+    if (!confirmed) return;
+    
+    try {
+        // جلب البيانات الحالية
+        const getResponse = await fetch(JSONBIN_URL, {
+            method: 'GET',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const jsonData = await getResponse.json();
+        
+        let applications = jsonData.record && jsonData.record.applications ? jsonData.record.applications : [];
+        let messages = jsonData.record && jsonData.record.messages ? jsonData.record.messages : [];
+        
+        // حذف الرسالة
+        messages = messages.filter(msg => msg.id !== msgId);
+        
+        // تحديث البيانات
+        const updateResponse = await fetch(JSONBIN_URL, {
+            method: 'PUT',
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                applications: applications,
+                messages: messages
+            })
+        });
+        
+        if (!updateResponse.ok) {
+            throw new Error('فشل في حذف الرسالة');
+        }
+        
+        alert('تم حذف الرسالة بنجاح');
+        document.getElementById('messageModal').style.display = 'none';
+        fetchMessages();
+        
+    } catch (error) {
+        console.error('خطأ في حذف الرسالة:', error);
+        alert('حدث خطأ في حذف الرسالة.');
+    }
+}
+
+// دالة تحديث معلومات التقسيم للرسائل
+function updateMessagesPaginationInfo() {
+    const totalPages = Math.max(1, Math.ceil(filteredMessages.length / messagesPerPage));
+    document.getElementById('messagesPageInfo').textContent = `الصفحة ${currentMessagesPage} من ${totalPages}`;
+    
+    // تفعيل/تعطيل أزرار التنقل
+    document.getElementById('prevMessagesPage').disabled = currentMessagesPage === 1;
+    document.getElementById('nextMessagesPage').disabled = currentMessagesPage === totalPages;
+}
+
+// دالة الانتقال للصفحة السابقة للرسائل
+function goToPrevMessagesPage() {
+    if (currentMessagesPage > 1) {
+        currentMessagesPage--;
+        updateMessagesTable();
+        updateMessagesPaginationInfo();
+    }
+}
+
+// دالة الانتقال للصفحة التالية للرسائل
+function goToNextMessagesPage() {
+    const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
+    if (currentMessagesPage < totalPages) {
+        currentMessagesPage++;
+        updateMessagesTable();
+        updateMessagesPaginationInfo();
+    }
+}
+
+// دالة تصدير الرسائل كـ CSV
+function exportMessagesToCSV() {
+    if (filteredMessages.length === 0) {
+        alert('لا توجد رسائل للتصدير');
+        return;
+    }
+    
+    // إنشاء رؤوس الأعمدة
+    const headers = ['رقم الرسالة', 'الاسم', 'البريد الإلكتروني', 'الرسالة', 'تاريخ الإرسال'];
+    
+    // إنشاء صفوف البيانات
+    const rows = filteredMessages.map(msg => {
+        const msgDate = new Date(msg.date);
+        const formattedDate = msgDate.toLocaleDateString('ar-SA') + ' ' + 
+                            msgDate.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        
+        return [
+            msg.id || '',
+            msg.contactName || '',
+            msg.contactEmail || '',
+            `"${(msg.contactMessage || '').replace(/"/g, '""')}"`,
+            formattedDate
+        ];
+    });
+    
+    // إنشاء محتوى CSV
+    let csvContent = '\uFEFF'; // BOM للدعم الكامل للعربية
+    csvContent += headers.map(h => `"${h}"`).join(',') + '\n';
+    csvContent += rows.map(row => row.join(',')).join('\n');
+    
+    // إنشاء وتحميل الملف
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `رسائل_الأكاديمية_${new Date().toLocaleDateString('ar-SA')}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// إضافة مستمعي الأحداث للرسائل
+document.addEventListener('DOMContentLoaded', function() {
+    // إضافة مستمعي الأحداث للفلاتر والأزرار
+    document.getElementById('applyMessagesFilter').addEventListener('click', applyMessagesFilter);
+    document.getElementById('resetMessagesFilter').addEventListener('click', resetMessagesFilter);
+    document.getElementById('searchMessages').addEventListener('keyup', applyMessagesFilter);
+    document.getElementById('exportMessagesCSV').addEventListener('click', exportMessagesToCSV);
+    document.getElementById('prevMessagesPage').addEventListener('click', goToPrevMessagesPage);
+    document.getElementById('nextMessagesPage').addEventListener('click', goToNextMessagesPage);
+});
