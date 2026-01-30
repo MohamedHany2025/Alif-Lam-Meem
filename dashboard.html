@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/tracking-admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -26,6 +27,7 @@
                 <li><a href="#stats">الإحصائيات</a></li>
                 <li><a href="#applications">الطلبات</a></li>
                 <li><a href="#messages">الرسائل</a></li>
+                <li><a href="#tracking">ملفات المتابعة</a></li>
                 <li><button id="refreshBtn"><i class="fas fa-sync-alt"></i> تحديث البيانات</button></li>
                 <li class="user-info">
                     <i class="fas fa-user-circle"></i>
@@ -349,6 +351,62 @@
             </div>
         </div>
     </div>
+
+    <!-- قسم إدارة ملفات المتابعة -->
+    <section class="tracking-files-section" id="tracking">
+        <div class="container">
+            <h2 class="section-title">إدارة ملفات متابعة الطلاب</h2>
+            
+            <div class="tracking-admin-container">
+                <div class="tracking-files-list">
+                    <table class="tracking-admin-table">
+                        <thead>
+                            <tr>
+                                <th>اسم الملف</th>
+                                <th>الوصف</th>
+                                <th>تاريخ الرفع</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trackingAdminFilesBody">
+                            <tr class="no-files-message">
+                                <td colspan="4">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>لا توجد ملفات حالياً</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="tracking-upload-admin">
+                    <div class="upload-card-admin">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> رفع ملف متابعة</h3>
+                        <form id="trackingUploadAdminForm">
+                            <div class="form-group">
+                                <label for="adminTrackingFileName">اسم الملف</label>
+                                <input type="text" id="adminTrackingFileName" name="fileName" placeholder="أدخل اسم الملف" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="adminTrackingFileUrl">رابط الملف (PDF)</label>
+                                <input type="url" id="adminTrackingFileUrl" name="fileUrl" placeholder="أدخل رابط ملف PDF" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="adminTrackingFileDesc">وصف الملف</label>
+                                <textarea id="adminTrackingFileDesc" name="fileDesc" rows="4" placeholder="وصف الملف والمحتوى"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn submit-btn">
+                                <i class="fas fa-upload"></i> رفع الملف
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- الفوتر -->
     <footer class="footer dashboard-footer">

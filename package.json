@@ -1,0 +1,16 @@
+{
+  "name": "alif-lam-meem",
+  "version": "1.0.0",
+  "description": "مشروع شامل لموقع إلكتروني ولوحة تحكم لإدارة أكاديمية متخصصة في تحفيظ القرآن الكريم وتعليم التجويد عبر الإنترنت.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "eslint": "^9.39.2"
+  }
+}
