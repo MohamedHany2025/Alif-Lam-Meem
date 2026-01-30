@@ -77,9 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // جلب البيانات من JSONBin
     fetchApplications();
     
-    // جلب الرسائل من JSONBin
-    setTimeout(() => fetchMessages(), 500);
-    
     // إضافة مستمعي الأحداث
     document.getElementById('refreshBtn').addEventListener('click', function() {
         fetchApplications();
@@ -110,6 +107,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // إضافة مستمعي الأحداث للرسائل
+    document.getElementById('applyMessagesFilter').addEventListener('click', applyMessagesFilter);
+    document.getElementById('resetMessagesFilter').addEventListener('click', resetMessagesFilter);
+    document.getElementById('searchMessages').addEventListener('keyup', applyMessagesFilter);
+    document.getElementById('exportMessagesCSV').addEventListener('click', exportMessagesToCSV);
+    document.getElementById('prevMessagesPage').addEventListener('click', goToPrevMessagesPage);
+    document.getElementById('nextMessagesPage').addEventListener('click', goToNextMessagesPage);
+    
+    // جلب الرسائل من JSONBin
+    setTimeout(() => fetchMessages(), 500);
 });
 
 // دالة جلب البيانات من JSONBin
@@ -974,15 +982,4 @@ function exportMessagesToCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}
-
-// إضافة مستمعي الأحداث للرسائل
-document.addEventListener('DOMContentLoaded', function() {
-    // إضافة مستمعي الأحداث للفلاتر والأزرار
-    document.getElementById('applyMessagesFilter').addEventListener('click', applyMessagesFilter);
-    document.getElementById('resetMessagesFilter').addEventListener('click', resetMessagesFilter);
-    document.getElementById('searchMessages').addEventListener('keyup', applyMessagesFilter);
-    document.getElementById('exportMessagesCSV').addEventListener('click', exportMessagesToCSV);
-    document.getElementById('prevMessagesPage').addEventListener('click', goToPrevMessagesPage);
-    document.getElementById('nextMessagesPage').addEventListener('click', goToNextMessagesPage);
-})})});
+}})});
