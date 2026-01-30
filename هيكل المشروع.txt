@@ -1,0 +1,18 @@
+Alif-Lam-Meim/
+|
+├── index.html
+├── dashboard.html
+|
+├── css/
+│   ├── style.css
+│   └── dashboard.css
+|
+├── js/
+│   ├── script.js
+│   └── dashboard.js
+|
+├── assets/
+│   └── logo.png
+|
+├── هيكل المشروع.txt
+└── README.md

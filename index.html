@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أكاديمية Alif-Lam-Meem | تحفيظ القرآن الكريم بالتجويد</title>
+    <link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="شعار أكاديمية Alif-Lam-Meem" class="logo">
+                <div class="logo-text">
+                    <h1>أكاديمية Alif-Lam-Meem</h1>
+                    <p>تحفيظ القرآن الكريم بالتجويد</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#about">عن الأكاديمية</a></li>
+                <li><a href="#apply">التقديم</a></li>
+                <li><a href="#contact">اتصل بنا</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- قسم الهيرو -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h2>تعلم القرآن الكريم <span class="highlight">بالتجويد</span> مع أفضل المعلمين</h2>
+                <p>أكاديمية Alif-Lam-Meem تقدم دورات تحفيظ القرآن الكريم عبر الإنترنت مع معلمين متخصصين في التجويد والقراءات.</p>
+                <a href="#apply" class="btn">سجل الآن</a>
+            </div>
+            <div class="hero-image">
+                <div class="quran-frame">
+                    <i class="fas fa-quran"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم عن الأكاديمية -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">عن أكاديميتنا</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>أكاديمية Alif-Lam-Meem هي أكاديمية متخصصة في تحفيظ القرآن الكريم وتعليم تجويده عبر الإنترنت. نهدف إلى تعليم كتاب الله تعالى بأفضل الطرق وأحدث الوسائل التعليمية.</p>
+                    <p>نقدم دروسًا فردية وجماعية مع معلمين مؤهلين ومرخصين في القراءات والتجويد، مع مراعاة الفروق الفردية لكل طالب.</p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-laptop-house"></i>
+                            <h3>التدريس أونلاين</h3>
+                            <p>دروس مباشرة عبر منصات التعليم عن بعد</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-user-graduate"></i>
+                            <h3>معلمون متخصصون</h3>
+                            <p>معلمون حاصلون على إجازات في القراءات</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h3>مرونة في المواعيد</h3>
+                            <p>اختر المواعيد المناسبة لجدولك</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم التقديم -->
+    <section class="apply" id="apply">
+        <div class="container">
+            <h2 class="section-title">تقديم الالتحاق بالأكاديمية</h2>
+            <p class="section-subtitle">املأ النموذج التالي للتقديم في أكاديمية Alif-Lam-Meem لتحفيظ القرآن الكريم</p>
+            
+            <div class="apply-container">
+                <div class="apply-form">
+                    <form id="applicationForm">
+                        <div class="form-group">
+                            <label for="fullName">الاسم الرباعي *</label>
+                            <input type="text" id="fullName" name="fullName" required placeholder="أدخل اسمك الرباعي">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="age">العمر *</label>
+                            <input type="number" id="age" name="age" min="5" max="80" required placeholder="أدخل عمرك">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="country">البلد *</label>
+                            <input type="text" id="country" name="country" required placeholder="أدخل بلد الإقامة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sessions">عدد الحصص في الأسبوع *</label>
+                            <select id="sessions" name="sessions" required>
+                                <option value="">اختر عدد الحصص</option>
+                                <option value="1">حصة واحدة</option>
+                                <option value="2">حصتان</option>
+                                <option value="3">ثلاث حصص</option>
+                                <option value="4">أربع حصص</option>
+                                <option value="5">خمس حصص أو أكثر</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">رقم الهاتف *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="أدخل رقم هاتفك مع رمز الدولة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>نوع الدورة *</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="tajweed-quran" name="courseType" value="تجويد وقرآن" required>
+                                    <label for="tajweed-quran">تجويد وقرآن</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="quran-only" name="courseType" value="قرآن فقط">
+                                    <label for="quran-only">قرآن فقط</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">ملاحظات إضافية (اختياري)</label>
+                            <textarea id="notes" name="notes" rows="3" placeholder="أي ملاحظات أو استفسارات إضافية"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn submit-btn">تقديم الطلب</button>
+                        <p class="form-notice">سيتم التواصل معك خلال 48 ساعة بعد تقديم الطلب</p>
+                    </form>
+                </div>
+                
+                <div class="apply-info">
+                    <div class="info-card">
+                        <h3>معلومات مهمة</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> جميع المعلمين حاصلون على إجازات في القراءات</li>
+                            <li><i class="fas fa-check-circle"></i> توفير مناهج خاصة بكل فئة عمرية</li>
+                            <li><i class="fas fa-check-circle"></i> اختبار تحديد المستوى قبل البدء</li>
+                            <li><i class="fas fa-check-circle"></i> شهادة معتمدة بعد إتمام كل مرحلة</li>
+                            <li><i class="fas fa-check-circle"></i> مراجعة دورية ومتابعة مستمرة</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>متطلبات النظام</h3>
+                        <ul>
+                            <li><i class="fas fa-laptop"></i> جهاز كمبيوتر أو هاتف ذكي</li>
+                            <li><i class="fas fa-wifi"></i> اتصال إنترنت مستقر</li>
+                            <li><i class="fas fa-headphones"></i> سماعات وميكروفون</li>
+                            <li><i class="fas fa-book-quran"></i> مصحف شخصي</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الاتصال -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">تواصل معنا</h2>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>مديرة الأكاديمية</h3>
+                            <p>أ. سارة بحيري</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>البريد الإلكتروني</h3>
+                            <p>info@alif-lam-meem.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>الهاتف</h3>
+                            <p>+20 10 6833 9196</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="contact-form">
+                    <h3>أرسل رسالة</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="contactName">اسمك</label>
+                            <input type="text" id="contactName" name="contactName" placeholder="أدخل اسمك">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactEmail">البريد الإلكتروني</label>
+                            <input type="email" id="contactEmail" name="contactEmail" placeholder="أدعن بريدك الإلكتروني">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactMessage">الرسالة</label>
+                            <textarea id="contactMessage" name="contactMessage" rows="5" placeholder="أدخل رسالتك هنا..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">إرسال الرسالة</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-container">
+                        <img src="assets/logo.png" alt="شعار أكاديمية Alif-Lam-Meem" class="logo">
+                        <div class="logo-text">
+                            <h2>أكاديمية Alif-Lam-Meem</h2>
+                            <p>تحفيظ القرآن الكريم بالتجويد</p>
+                        </div>
+                    </div>
+                    <p>أكاديمية متخصصة في تحفيظ القرآن الكريم وتعليم تجويده عبر الإنترنت بأفضل المناهج وأحدث الطرق التعليمية.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#about">عن الأكاديمية</a></li>
+                        <li><a href="#apply">التقديم</a></li>
+                        <li><a href="#contact">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-social">
+                    <h3>تابعنا على</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="https://wa.me/201068339196"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                    <p>جميع الحقوق محفوظة &copy; 2026 أكاديمية Alif-Lam-Meem</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- نموذج النجاح -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>تم استلام طلبك بنجاح!</h3>
+            <p>شكراً لتقديمك في أكاديمية Alif-Lam-Meem. سنقوم بالاتصال بك خلال 48 ساعة.</p>
+            <p class="modal-id">رقم الطلب: <span id="applicationId"></span></p>
+            <button type="button" id="copyButton" class="btn-copy">نسخ رقم الطلب</button>
+            <button class="btn close-modal">حسناً</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
