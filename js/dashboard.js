@@ -618,7 +618,7 @@ document.getElementById('delete-application-btn').addEventListener('click', func
         document.getElementById('applicationModal').style.display = 'none';
         alert(`تم حذف الطلب رقم ${appId} بنجاح.`);
     }
-});
+)};
 
 // تأكيد الطلب
 document.getElementById('conform-application-btn').addEventListener('click', function() {
@@ -985,4 +985,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('exportMessagesCSV').addEventListener('click', exportMessagesToCSV);
     document.getElementById('prevMessagesPage').addEventListener('click', goToPrevMessagesPage);
     document.getElementById('nextMessagesPage').addEventListener('click', goToNextMessagesPage);
-});
+})})});
